@@ -16,7 +16,7 @@ Once an action is chosen a user will be prompted for more information or a table
 ![Roles](/images/viewRoles.png)
 ##### View all Departments
 ![Departments](/images/viewDepts.png)
-##### Update an Emplyoee
+##### Update an Employee
 ![Update Prompt](/images/updateEmployee.png)
 ![Updated Employee](/images/updatedEmployee.png)
 
