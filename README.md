@@ -18,10 +18,8 @@ Once an action is chosen a user will be prompted again for more information if a
 ![Departments](/images/viewDepts.png)
 ##### Update an Emplyoee
 ![Update Prompt](/images/updateEmployee.png)
-![Updated Employee](/images/updatesEmployee.png)
+![Updated Employee](/images/updatedEmployee.png)
 
-### Generate Profile Example
-![Dev Profile](/images/profileImg.png)
 
 ## Programming Languages Used
 * Node.js
