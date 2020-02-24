@@ -31,10 +31,15 @@ FROM roles
 LEFT JOIN department
 ON roles.department_id = department.id;
 
-SELECT * FROM employee;
 
-SELECT * FROM roles;
+SELECT * FROM employee 
+JOIN roles ON employee.role_id = roles.id
+JOIN department AS D ON roles.department_id = D.id
+WHERE D.id = 2;
 
-SELECT * FROM department;
 
-
+SELECT SUM(roles.salary),roles.title FROM employee AS E
+JOIN roles ON E.role_id = roles.id
+JOIN department AS D ON roles.department_id = D.id
+WHERE D.id = 2
+GROUP BY roles.title;

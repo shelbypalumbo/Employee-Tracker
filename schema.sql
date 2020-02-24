@@ -9,14 +9,18 @@ CREATE TABLE employee(
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30)NOT NULL,
     role_id INT NOT NULL,
+    manager_id INT NULL,
     PRIMARY KEY(id)
 );
+
+ALTER TABLE employee ADD manager_id INT NULL;
 
 CREATE TABLE department(
     id INT NOT NULL AUTO_INCREMENT,
     dept_name VARCHAR(30)NOT NULL,
     PRIMARY KEY(id)
 );
+SELECT * FROM employee;
 
 
 CREATE TABLE roles(
