@@ -73,8 +73,8 @@ function start() {
       case "Update Employee Role":
         updateRole();
         break;
-      /*
-      case "Update Employee Manager":
+
+      /*case "Update Employee Manager":
           updateManager();
           break;*/
 
@@ -375,7 +375,7 @@ function removeEmployee() {
       message: "What is the id of the employee that needs to be removed?",
     }
   ]).then(function (answer) {
-    connection.query("DELETE FROM employee WHERE id = ?", [answer.employeeID], function (err, res) {
+    connection.query("DELETE FROM employee WHERE id = ?", answer.employeeID, function (err, res) {
       if (err) throw err;
       // Log all results of the SELECT statement
       console.table(res);
@@ -472,39 +472,20 @@ function totDeptBudget() {
 
 
 //BONUS==============================================================
-
 /*
+
 //--------Remove a Role-----------------------------------------
 function removeRole() {
-  console.log("Remove a Role...\n");
-  inquirer.prompt([
-    {
-      name: "employeeID",
-      type: "input",
-      message: "What is the id of the employee that needs to be removed?",
-    }
-  ]).then(function (answer) {
-    connection.query("DELETE FROM roles WHERE id = ?", [answer.roles_ID], function (err, res) {
-      if (err) throw err;
-      // Log all results of the SELECT statement
-      console.table(res);
-      start();
-    });
-  })
-}
+
+};
 
 
-
+/*
 //-----------Remove a Department-------------------------------------
 function removeDepartment(){
 
 };
 
-
-//--------Update Employee Role---------------------------------------
-  function updateRole() {
-
-  };
 
 //---------Update Employee Manager-----------------------------------
   function updateManager() {
