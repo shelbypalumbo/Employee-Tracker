@@ -37,8 +37,8 @@ function start() {
       "Add an Employee",
       "Add a new Role",
       "Add a new Department",
-      "Update Employee Role",
-      /*"Update Employee Manager",*/
+      // "Update Employee Role",
+      // "Update Employee Manager",
       "Remove an Employee",
       "Remove a Role",
       "Remove a Department",
@@ -71,12 +71,12 @@ function start() {
         break;
 
       case "Update Employee Role":
-        updateRole();
+        updateEmployeeRole();
         break;
 
-      /*case "Update Employee Manager":
-          updateManager();
-          break;*/
+      case "Update Employee Manager":
+        updateManager();
+        break;
 
       case "Remove an Employee":
         removeEmployee();
@@ -101,10 +101,10 @@ function start() {
       case "View Totalized Department Budget":
         totDeptBudget();
         break;
+
       case "Exit":
         connection.end();
         break;
-
     }
   });
 }
@@ -125,6 +125,7 @@ function allEmployees() {
     });
 };
 
+
 //--------View all Roles---------------------------------------------
 function allRoles() {
   console.log("Selecting all roles...\n");
@@ -140,6 +141,7 @@ function allRoles() {
     });
 };
 
+
 //---------View all Departments--------------------------------------
 function allDepartments() {
   console.log("Selecting all departments...\n");
@@ -151,93 +153,69 @@ function allDepartments() {
   });
 };
 
+
 //---------Add an Employee---------------------------------------------
 function addEmployee() {
   console.log("Adding a new employee...\n");
-  inquirer.prompt([
-    {
-      name: "first_name",
-      type: "input",
-      message: "What is the employee's first name?"
-    },
-    {
-      name: "last_name",
-      type: "input",
-      message: "What is the employee's last name?"
-    },
-    {
-      name: "role",
-      type: "list",
-      message: "What is the employee's role?",
-      choices: [
-        "Sales Lead",
-        "Salesperson",
-        "Accountant",
-        "Software Engineer",
-        "Lead Engineer",
-        "Lawyer",
-        "Legal Team Lead",
-        "Human Resource Consultant",
-        "Sales Manager"
-      ]
-    },
-    {
-      name: "manager_id",
-      type: "input",
-      message: "What is the id of the employee manager?"
-    },
-  ]).then(function (answer) {
-    switch (answer.role) {
-      case "Sales Lead":
-        answer.role = 1;
-        break;
-      case "Salesperson":
-        answer.role = 2;
-        break;
-      case "Accountant":
-        answer.role = 3;
-        break;
-      case "Software Engineer":
-        answer.role = 4;
-        break;
-      case "Lead Engineer":
-        answer.role = 5;
-        break;
-      case "Lawyer":
-        answer.role = 6;
-        break;
-      case "Legal Team Lead":
-        answer.role = 7;
-        break;
-      case "Human Resource Consultant":
-        answer.role = 8;
-        break;
-      case "Sales Manager":
-        answer.role = 109;
-        break;
-    }
-    connection.query(
-      "INSERT INTO employee SET ?",
-      {
-        first_name: answer.first_name,
-        last_name: answer.last_name,
-        role_id: answer.role,
-        manager_id: answer.manager_id
-      },
-      function (err, res) {
-        if (err) throw err;
-        console.log("Your Employee was created successfully!");
-        console.table(res);
-        // re-prompt the user for if they want to make another action
-        start();
+  var roles = [];
+  connection.query(`SELECT roles.title, roles.id FROM roles`,
+    function (err, res) {
+      if (err) throw err;
+      for (var i = 0; i < res.length; i++) {
+        roles.push(res[i].title);
       }
-    );
-  });
+      inquirer.prompt([
+        {
+          name: "first_name",
+          type: "input",
+          message: "What is the employee's first name?"
+        },
+        {
+          name: "last_name",
+          type: "input",
+          message: "What is the employee's last name?"
+        },
+        {
+          name: "role",
+          type: "list",
+          message: "What is the employee's role?",
+          choices: roles
+        },
+        {
+          name: "manager_id",
+          type: "input",
+          message: "What is the id of the employee manager?"
+        },
+      ]).then(function (answer) {
+        var matchRole = res.find(function (currentRole) {
+          if (answer.role == currentRole.title) {
+            return currentRole;
+          }
+        });
+        connection.query(
+          "INSERT INTO employee SET ?",
+          {
+            first_name: answer.first_name,
+            last_name: answer.last_name,
+            role_id: matchRole.id,
+            manager_id: answer.manager_id
+          },
+          function (err, res) {
+            if (err) throw err;
+            console.log("Your Employee was created successfully!");
+            // re-prompt the user for if they want to make another action
+            start();
+          }
+        );
+      });
+    })
 };
+
 
 //---------Add a Department----------------------------------------------
 function addDepartment() {
   console.log("Adding a new Department...\n");
+  var departments = [];
   inquirer
     .prompt([
       {
@@ -252,16 +230,18 @@ function addDepartment() {
         },
         function (err, res) {
           if (err) throw err;
+          departments.push(answer.dept_name);
           console.log("Your new Department was created successfully!");
-          console.table(res);
           start();
         });
     })
 };
 
+
 //------------Add a new Role-------------------------------------------------
 function addRole() {
   console.log("Adding a new Role...\n");
+  var roles = [];
   inquirer
     .prompt([
       {
@@ -288,100 +268,44 @@ function addRole() {
         },
         function (err, res) {
           if (err) throw err;
+          roles.push(answer.title);
           console.log("Your new Role was created successfully!");
-          console.table(res);
           start();
         });
     })
-};
-
-//---------Update an Employee's role-------------------------------------
-function updateRole() {
-  console.log("Updating an employees Role...\n");
-  inquirer.prompt([
-    {
-      name: "employeeID",
-      type: "input",
-      message: "What is the id of the employee that needs a role update?",
-    },
-    {
-      name: "newRole",
-      type: "list",
-      message: "What is the employee's new role?",
-      choices: [
-        "Sales Lead",
-        "Salesperson",
-        "Sales Manager",
-        "Accountant",
-        "Software Engineer",
-        "Lead Engineer",
-        "Lawyer",
-        "Legal Team Lead"
-      ]
-    }
-  ]).then(function (answer) {
-    switch (answer.newRole) {
-      case "Sales Lead":
-        answer.newRole = 1;
-        break;
-      case "Salesperson":
-        answer.newRole = 2;
-        break;
-      case "Accountant":
-        answer.newRole = 3;
-        break;
-      case "Software Engineer":
-        answer.newRole = 4;
-        break;
-      case "Lead Engineer":
-        answer.newRole = 5;
-        break;
-      case "Lawyer":
-        answer.newRole = 6;
-        break;
-      case "Legal Team Lead":
-        answer.newRole = 7;
-        break;
-      case "Sales Manager":
-        answer.newRole = 7;
-        break;
-    }
-    connection.query("UPDATE employee SET ? WHERE ?",
-      [
-        {
-          role_id: answer.newRole
-        },
-        {
-          id: answer.employeeID
-        }
-      ],
-      function (err, res) {
-        if (err) throw err;
-        console.log(res.affectedRows + " employee was updated successfully!");
-        console.table(res);
-        start();
-      });
-  })
 };
 
 
 //--------Remove an Employee-----------------------------------------
 function removeEmployee() {
   console.log("Remove an employee...\n");
-  inquirer.prompt([
-    {
-      name: "employeeID",
-      type: "input",
-      message: "What is the id of the employee that needs to be removed?",
-    }
-  ]).then(function (answer) {
-    connection.query("DELETE FROM employee WHERE id = ?", answer.employeeID, function (err, res) {
+  var employees = [];
+  connection.query(`SELECT employee.first_name, employee.id FROM employee`,
+    function (err, res) {
       if (err) throw err;
-      // Log all results of the SELECT statement
-      console.table(res);
-      start();
-    });
-  })
+      for (var i = 0; i < res.length; i++) {
+        employees.push(res[i].first_name);
+      }
+      inquirer.prompt([
+        {
+          name: "employee",
+          type: "list",
+          message: "Which employee needs to be removed?",
+          choices: employees
+        }
+      ]).then(function (answer) {
+        var matchEmployee = res.find(function (selectedEmployee) {
+          if (answer.employee == selectedEmployee.first_name) {
+            return selectedEmployee;
+          }
+        });
+        connection.query("DELETE FROM employee WHERE id = ?", matchEmployee.id, function (err, res) {
+          if (err) throw err;
+          // Log all results of the SELECT statement
+          start();
+        });
+      })
+    })
 }
 
 
@@ -411,29 +335,44 @@ function employeesByManager() {
   });
 };
 
+
 //------View Employees by Department---------------------------------
 function employeesByDept() {
   console.log("Selecting all employees by Department...\n");
-  inquirer.prompt([
-    {
-      name: "dept_ID",
-      type: "input",
-      message: "What is the department id?",
-    }
-  ]).then(function (answer) {
-    connection.query(`SELECT employee.id,employee.first_name,employee.last_name,employee.manager_id, roles.title,roles.salary, roles.department_id
+  var departments = [];
+  connection.query(`SELECT department.dept_name, department.id FROM department`,
+    function (err, res) {
+      if (err) throw err;
+      for (var i = 0; i < res.length; i++) {
+        departments.push(res[i].dept_name);
+      }
+      inquirer.prompt([
+        {
+          name: "dept_ID",
+          type: "list",
+          message: "What is the department you would like to search?",
+          choices: departments
+        }
+      ]).then(function (answer) {
+        var matchId = res.find(function (selectedDept) {
+          if (answer.dept_ID == selectedDept.dept_name) {
+            return selectedDept;
+          }
+        })
+        connection.query(`SELECT employee.id,employee.first_name,employee.last_name,employee.manager_id, roles.title,roles.salary, roles.department_id
                     FROM employee 
                     LEFT JOIN roles 
                     ON employee.role_id = roles.id
                     WHERE roles.department_id = ?
-                    `, answer.dept_ID,
-      function (err, res) {
-        if (err) throw err;
-        // Log all results of the SELECT statement
-        console.table(res);
-        start();
-      });
-  });
+                    `, matchId.id,
+          function (err, res) {
+            if (err) throw err;
+            // Log all results of the SELECT statement
+            console.table(res);
+            start();
+          });
+      })
+    });
 }
 
 
@@ -461,34 +400,145 @@ function totDeptBudget() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-//BONUS==============================================================
-/*
-
 //--------Remove a Role-----------------------------------------
 function removeRole() {
+  console.log("Remove a role...\n");
+  var roles = [];
+  connection.query(`SELECT roles.title, roles.id FROM roles`,
+    function (err, res) {
+      if (err) throw err;
+      for (var i = 0; i < res.length; i++) {
+        roles.push(res[i].title);
+      }
+      inquirer.prompt([
+        {
+          name: "role",
+          type: "list",
+          message: "What is the role that needs to be removed?",
+          choices: roles
+        }
+      ]).then(function (answer) {
+        var matchId = res.find(function (currentRole) {
+          if (answer.role == currentRole.title) {
+            return currentRole;
+          }
+        });
+        connection.query("DELETE FROM roles WHERE id = ?", matchId.id, function (err, res) {
+          if (err) throw err;
+          // Log all results of the SELECT statement
+          start();
+        });
+      })
+    });
+}
 
+
+//-----------Remove a Department-------------------------------------
+function removeDepartment() {
+  console.log("Remove a department...\n");
+  var departments = [];
+  connection.query(`SELECT dept_name, department.id FROM department`,
+    function (err, res) {
+      if (err) throw err;
+      for (var i = 0; i < res.length; i++) {
+        departments.push(res[i].dept_name);
+      }
+      inquirer.prompt([
+        {
+          name: "department",
+          type: "list",
+          message: "Which department would you like to remove?",
+          choices: departments
+        }
+      ]).then(function (answer) {
+        var matchDepartment = res.find(function (selectedDepartment) {
+          if (answer.department == selectedDepartment.dept_name) {
+            return selectedDepartment;
+          }
+        });
+        connection.query("DELETE FROM department WHERE id = ?", matchDepartment.id, function (err, res) {
+          if (err) throw err;
+          // Log all results of the SELECT statement
+          start();
+        });
+      })
+    });
 };
 
+
+
+
+
+
+
+
+/*====================================================WORK IN PROGRESS=====================================
 
 /*
-//-----------Remove a Department-------------------------------------
-function removeDepartment(){
-
-};
-
-
 //---------Update Employee Manager-----------------------------------
   function updateManager() {
 
   };
+
+
+  //---------Update an Employee's role-------------------------------------
+function updateEmployeeRole() {
+  console.log("Updating an employees Role...\n");
+  var roles = [];
+  connection.query(`SELECT roles.title, roles.id FROM roles`,
+    function (err, res) {
+      if (err) throw err;
+      for (var i = 0; i < res.length; i++) {
+        roles.push(res[i].title);
+      };
+      var employees = [];
+  connection.query(`SELECT employee.first_name, employee.id FROM employee`,
+        function (err, res) {
+          if (err) throw err;
+          for (var i = 0; i < res.length; i++) {
+            employees.push(res[i].first_name);
+          }
+      inquirer.prompt([
+        {
+          name: "employee",
+          type: "list",
+          message: "Which employee needs a role update?",
+          choices: employees
+        },
+        {
+          name: "newRole",
+          type: "list",
+          message: "What is the employee's new role?",
+          choices: roles
+        }
+      ]).then(function (answer) {
+        var matchId = res.find(function (currentRole) {
+          if (answer.newRole == currentRole.title) {
+            return currentRole;
+          }
+        });
+        var matchEmployee = res.find(function (selectedEmployee) {
+          if (answer.employee == selectedEmployee.first_name) {
+            return selectedEmployee;
+          }
+        })
+        connection.query("UPDATE employee SET ? WHERE ?",
+          [
+            {
+              role_id: matchId.id
+            },
+            {
+              first_name: matchEmployee.id
+            }
+          ],
+          function (err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " employee was updated successfully!");
+            start();
+          });
+      })
+    })
+});
+}
+
 */
