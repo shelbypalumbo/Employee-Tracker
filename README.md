@@ -1,26 +1,27 @@
-# Employee-Managment-System
+# Employee-Tracker
 
 A CLI Employee Management System.
 
 ## User Story
-As a Business Owner, I want an Employee Managment System, so that I can easily make update, add, and view information on all of my employees, departments, and company roles.
+As a business owner, I want an Employee Managment System, so that I can easily make updates, remove, and view information on all of my employees, departments, and company roles.
 
 ## Usage
-The user is initially prompted to choose what they would like to do. 
-![Prompt Message](/images/startPrompt.png)
+To run the application in Terminal, type "node app.js" into the command line.
+The user will then be prompted to choose frmo a list of options for what action they would like to take.
+![Prompt Message](/images/startApp.png)
 
-Once an action is chosen a user will be prompted for more information or a table will appear with the chosen data.
+Once an action is chosen, a user will be prompted for more information, or a table will appear with the chosen data.
+#### Add an Employee
+![Employee Addition](/images/addEmployee.png)
+
 ##### View all Employees
-![Employees](/images/viewEmployees.png)
+![Employees](/images/viewAllEmployees.png)
+
 ##### View all Roles
-![Roles](/images/viewRoles.png)
+![Roles](/images/viewAllRoles.png)
+
 ##### View all Departments
 ![Departments](/images/viewDepts.png)
-##### Update an Employee
-![Update Prompt](/images/updateEmployee.png)
-#### Updated Employee
-![Updated Employee](/images/updatedEmployee.png)
-
 
 ## Programming Languages Used
 * Node.js
